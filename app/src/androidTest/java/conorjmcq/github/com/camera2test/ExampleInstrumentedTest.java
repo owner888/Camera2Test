@@ -1,4 +1,4 @@
-package conorjmcq.github.com.camera2test;
+package com.agc.camera2test;
 
 import android.content.Context;
 import android.util.Log;
@@ -23,6 +23,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         Log.d("TestLog", "Package name: " + appContext.getPackageName());
-        assertEquals("conorjmcq.github.com.camera2test", appContext.getPackageName());
+        assertEquals("com.agc.camera2test", appContext.getPackageName());
     }
 }

@@ -1,4 +1,4 @@
-package conorjmcq.github.com.camera2test;
+package com.agc.camera2test;
 
 import android.Manifest;
 import android.content.ContentValues;
@@ -22,7 +22,6 @@ import android.media.ImageReader;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import androidx.annotation.NonNull;
@@ -49,6 +48,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+
 
 public class AndroidCamera2Api extends AppCompatActivity {
     private static final String TAG = "AndroidCameraApi";
@@ -80,9 +81,6 @@ public class AndroidCamera2Api extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_android_camera2_api);
-
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.surface);
-        linearLayout.addView(new Rectangle(this));
 
         textureView = (TextureView) findViewById(R.id.texture);
         assert textureView != null;

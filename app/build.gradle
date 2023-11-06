@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdk 33
     defaultConfig {
-        applicationId "conorjmcq.github.com.camera2test"
+        applicationId "com.agc.camera2test"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 1

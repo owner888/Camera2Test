@@ -1,4 +1,4 @@
-package conorjmcq.github.com.camera2test;
+package com.agc.camera2test;
 
 import android.content.Context;
 import android.graphics.Canvas;
