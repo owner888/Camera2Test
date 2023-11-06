@@ -1,0 +1,3 @@
+/Users/kaka/Documents/GoogleCamera/Camera2Test/app/.cxx/Debug/6vk1im5o/arm64-v8a/CMakeFiles/native-lib.dir
+/Users/kaka/Documents/GoogleCamera/Camera2Test/app/.cxx/Debug/6vk1im5o/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/kaka/Documents/GoogleCamera/Camera2Test/app/.cxx/Debug/6vk1im5o/arm64-v8a/CMakeFiles/rebuild_cache.dir

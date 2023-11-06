@@ -1,0 +1,3 @@
+/Users/charcolee/company/demo/Camera2Test/app/.cxx/Debug/6vk1im5o/x86/CMakeFiles/native-lib.dir
+/Users/charcolee/company/demo/Camera2Test/app/.cxx/Debug/6vk1im5o/x86/CMakeFiles/edit_cache.dir
+/Users/charcolee/company/demo/Camera2Test/app/.cxx/Debug/6vk1im5o/x86/CMakeFiles/rebuild_cache.dir
