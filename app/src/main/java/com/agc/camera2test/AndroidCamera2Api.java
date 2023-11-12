@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -33,11 +35,16 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,11 +70,12 @@ public class AndroidCamera2Api extends AppCompatActivity {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
     private String cameraId;
+    private List<String> cameraIdList = new ArrayList<>();
     protected CameraDevice cameraDevice;
     protected CameraCaptureSession cameraCaptureSessions;
     protected CaptureRequest captureRequest;
     protected CaptureRequest.Builder captureRequestBuilder;
-    private Size imageDimension;
+    private Size mPreviewSize;
     private ImageReader imageReader;
     private File file;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
@@ -76,12 +84,12 @@ public class AndroidCamera2Api extends AppCompatActivity {
     private HandlerThread mBackgroundThread;
     private String mState = "PREVIEW";
     private boolean areWeFocused = false;
+    int sensorOrientation = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_android_camera2_api);
-
         textureView = (TextureView) findViewById(R.id.texture);
         assert textureView != null;
         textureView.setSurfaceTextureListener(textureListener);
@@ -192,6 +200,8 @@ public class AndroidCamera2Api extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+
     protected void takePicture() {
         if(null == cameraDevice) {
             Log.e(TAG, "cameraDevice is null");
@@ -200,10 +210,8 @@ public class AndroidCamera2Api extends AppCompatActivity {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraDevice.getId());
-            Size[] jpegSizes = null;
-            if (characteristics != null) {
-                jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
-            }
+
+            Size[] jpegSizes = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP).getOutputSizes(ImageFormat.JPEG);
             int width = 640;
             int height = 480;
             if (jpegSizes != null && 0 < jpegSizes.length) {
@@ -220,7 +228,8 @@ public class AndroidCamera2Api extends AppCompatActivity {
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
             // Orientation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            Log.e(TAG, "rotation: " + rotation);
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION,(sensorOrientation + ORIENTATIONS.get(rotation) + 270) % 360);
 
             final File file = new File(getExternalCacheDir().getAbsolutePath()+"/"+System.currentTimeMillis()+".jpg");
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
@@ -291,7 +300,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
             mState = "PREVIEW";
             SurfaceTexture texture = textureView.getSurfaceTexture();
             assert texture != null;
-            texture.setDefaultBufferSize(imageDimension.getWidth(), imageDimension.getHeight());
+            texture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
             Surface surface = new Surface(texture);
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.addTarget(surface);
@@ -316,26 +325,90 @@ public class AndroidCamera2Api extends AppCompatActivity {
         }
     }
 
+    private void initSpinner() {
+        // 声明一个下拉列表的数组适配器
+        ArrayAdapter<String> starAdapter = new ArrayAdapter<String>(this,
+                R.layout.layout_camera_id, cameraIdList){
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView imageView = (TextView) view.findViewById(R.id.tv_camera_id);
+                imageView.setText(cameraIdList.get(position));
+                return view;
+            }
+
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView imageView = (TextView) view.findViewById(R.id.tv_camera_id);
+                imageView.setText(cameraIdList.get(position));
+                return view;
+            }
+        };
+        // 从布局文件中获取名叫sp_dialog的下拉框
+        Spinner sp_dialog = findViewById(R.id.camear_spinner);
+        // 指定下拉列表的样式
+        // 设置下拉框的标题。对话框模式才显示标题，下拉模式不显示标题
+        sp_dialog.setPrompt("请选择镜头");
+        sp_dialog.setAdapter(starAdapter); // 设置下拉框的数组适配器
+        sp_dialog.setSelection(0); // 设置下拉框默认显示第一项
+        // // 给下拉框设置选择监听器，一旦用户选中某一项，就触发监听器的onItemSelected方法
+        sp_dialog.setOnItemSelectedListener(new MySelectedListener());
+    }
+
+    // 定义下拉列表需要显示的文本数组
+
+    // 定义一个选择监听器，它实现了接口OnItemSelectedListener
+    class MySelectedListener implements AdapterView.OnItemSelectedListener {
+        // 选择事件的处理方法，其中arg2代表选择项的序号
+        public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+            initCamear(cameraIdList.get(arg2));
+        }
+
+        // 未选择时的处理方法，通常无需关注
+        public void onNothingSelected(AdapterView<?> arg0) {}
+    }
+
     private void openCamera() {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         Log.e(TAG, "is camera open");
+        try {
+            cameraIdList.clear();
+            cameraIdList.addAll(Arrays.asList(manager.getCameraIdList()));
+            initCamear(cameraIdList.get(0));
+            initSpinner();
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+        Log.e(TAG, "openCamera X");
+    }
+
+    private void initCamear(String cameraId){
+        if(cameraId.equals(this.cameraId)){
+            return;
+        }
+        closeCamera();
+        this.cameraId = cameraId;
+        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
 
         try {
-            cameraId = manager.getCameraIdList()[0];
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
+            Integer integer = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+            if(integer != null){
+                sensorOrientation = integer;
+            }
+            Log.d(TAG, "***************** SENSOR_ORIENTATION: " + integer);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             assert map != null;
-            imageDimension = map.getOutputSizes(SurfaceTexture.class)[0];
+            mPreviewSize = map.getOutputSizes(SurfaceTexture.class)[cameraIdList.indexOf(cameraId)];
             // Add permission for camera and let user grant the permission
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(AndroidCamera2Api.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CAMERA_PERMISSION);
                 return;
             }
+
             manager.openCamera(cameraId, stateCallback, null);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-        Log.e(TAG, "openCamera X");
     }
 
     protected void updatePreview() {
@@ -454,6 +527,5 @@ public class AndroidCamera2Api extends AppCompatActivity {
         }
 
     }
-
 
 }
