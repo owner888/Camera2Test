@@ -28,6 +28,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Size;
+import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
@@ -379,6 +380,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
         for (String id: ids) {
             try {
                 CameraCharacteristics cameraCharacteristics = manager.getCameraCharacteristics(String.valueOf(id));
+                Log.e(TAG, "formats: " + getFormats(cameraCharacteristics));
                 cameraIdList.add(id);
             } catch (IllegalArgumentException ae) {
 
@@ -386,6 +388,22 @@ public class AndroidCamera2Api extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static String getFormats(CameraCharacteristics cameraCharacteristics) {
+        SparseArray<String> formats = new SparseArray<>();
+        StringBuilder sb = new StringBuilder();
+        StreamConfigurationMap streamConfigurationMap = (StreamConfigurationMap) cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+        if (streamConfigurationMap != null) {
+            int[] outputFormats = streamConfigurationMap.getOutputFormats();
+            for (int i = 0; i < outputFormats.length; i++) {
+                sb.append(formats.get(outputFormats[i]));
+                if (i != outputFormats.length - 1) {
+                    sb.append(",");
+                }
+            }
+        }
+        return sb.toString();
     }
 
     private void initCamera(String cameraId){
