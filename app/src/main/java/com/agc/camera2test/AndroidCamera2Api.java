@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
-import android.graphics.Matrix;
-import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -30,9 +28,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Size;
-import android.util.SizeF;
 import android.util.SparseIntArray;
-import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -366,7 +362,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
         Log.e(TAG, "is camera open");
         cameraIdList.clear();
         scanAllCameras(manager);
-        initCamear(cameraIdList.get(0));
+        initCamera(cameraIdList.get(0));
         initSpinner();
         Log.e(TAG, "openCamera X");
     }
@@ -382,6 +378,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
         }
         for (String id: ids) {
             try {
+                CameraCharacteristics cameraCharacteristics = manager.getCameraCharacteristics(String.valueOf(id));
                 cameraIdList.add(id);
             } catch (IllegalArgumentException ae) {
 
@@ -391,7 +388,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
         }
     }
 
-    private void initCamear(String cameraId){
+    private void initCamera(String cameraId){
         if(cameraId.equals(this.cameraId)){
             return;
         }
