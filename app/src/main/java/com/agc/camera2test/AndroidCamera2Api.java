@@ -143,19 +143,16 @@ public class AndroidCamera2Api extends AppCompatActivity {
     final CameraCaptureSession.CaptureCallback captureCallbackListener = new CameraCaptureSession.CaptureCallback() {
         private void process(CaptureResult result) {
             Log.d("captureCallback", "***************** Entering PROCESS");
-
             switch (mState) {
                 case "PREVIEW": {
                     int afState = result.get(CaptureResult.CONTROL_AF_STATE);
                     if (CaptureResult.CONTROL_AF_TRIGGER_START == afState) {
                         if (areWeFocused) {
-
-                            Log.d("statePreview", "***************** areWeFocused: " + areWeFocused);
-
+                            // Log.d("statePreview", "***************** areWeFocused: " + areWeFocused);
                         }
                     }
                     areWeFocused = CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState;
-                    Log.d("statePreview", "***************** areWeFocused: " + areWeFocused);
+                    // Log.d("statePreview", "***************** areWeFocused: " + areWeFocused);
                     mState = "";
                     break;
                 }
@@ -356,7 +353,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
     class MySelectedListener implements AdapterView.OnItemSelectedListener {
         // 选择事件的处理方法，其中arg2代表选择项的序号
         public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-            initCamear(cameraIdList.get(arg2));
+            initCamera(cameraIdList.get(arg2));
         }
 
         // 未选择时的处理方法，通常无需关注
@@ -369,7 +366,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
         try {
             cameraIdList.clear();
             cameraIdList.addAll(Arrays.asList(manager.getCameraIdList()));
-            initCamear(cameraIdList.get(0));
+            initCamera(cameraIdList.get(0));
             initSpinner();
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -377,7 +374,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
         Log.e(TAG, "openCamera X");
     }
 
-    private void initCamear(String cameraId){
+    private void initCamera(String cameraId){
         if(cameraId.equals(this.cameraId)){
             return;
         }
@@ -410,20 +407,17 @@ public class AndroidCamera2Api extends AppCompatActivity {
     protected void updatePreview() {
         final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
             private void process(CaptureResult result) {
-                Log.d("captureCallback", "***************** ENTERING Capture Callback PROCESS()");
-
+                // Log.d("captureCallback", "***************** ENTERING Capture Callback PROCESS()");
                 switch (mState) {
                     case "PREVIEW": {
                         int afState = result.get(CaptureResult.CONTROL_AF_STATE);
                         if (CaptureResult.CONTROL_AF_TRIGGER_START == afState) {
                             if (areWeFocused) {
-
-                                Log.d("statePreview", "***************** areWeFocused: " + areWeFocused);
-
+                                // Log.d("statePreview", "***************** areWeFocused: " + areWeFocused);
                             }
                         }
                         areWeFocused = CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState;
-                        Log.d("statePreview", "***************** areWeFocused: " + areWeFocused);
+                        // Log.d("statePreview", "***************** areWeFocused: " + areWeFocused);
                         break;
                     }
                 }
@@ -433,7 +427,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
             public void onCaptureProgressed(CameraCaptureSession session, CaptureRequest request,
                                             CaptureResult partialResult) {
                 super.onCaptureProgressed(session, request, partialResult);
-                Log.d("captureProgressed", "*********** CAPTURE PROGRESSED");
+                // Log.d("captureProgressed", "*********** CAPTURE PROGRESSED");
                 process(partialResult);
             }
         };
