@@ -152,6 +152,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
             //open your camera here
+            startBackgroundThread();
             openCamera();
         }
         @Override
@@ -549,20 +550,19 @@ public class AndroidCamera2Api extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.e(TAG, "onResume");
-        startBackgroundThread();
-        if (textureView.isAvailable()) {
-            openCamera();
-        } else {
-            textureView.setSurfaceTextureListener(textureListener);
-        }
     }
 
     @Override
     protected void onPause() {
         Log.e(TAG, "onPause");
         //closeCamera();
-        stopBackgroundThread();
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopBackgroundThread();
     }
 
     /**
