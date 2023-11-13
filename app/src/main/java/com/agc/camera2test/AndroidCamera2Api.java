@@ -82,6 +82,54 @@ public class AndroidCamera2Api extends AppCompatActivity {
     private String mState = "PREVIEW";
     private boolean areWeFocused = false;
     int sensorOrientation = 0;
+    private static final SparseArray<String> capabilities = new SparseArray<>();
+    public static final SparseArray<String> formats = new SparseArray<>();
+
+    public AndroidCamera2Api() {
+        // 相机特性
+        capabilities.put(0,  "BACKWARD_COMPATIBLE");
+        capabilities.put(1,  "MANUAL_SENSOR");
+        capabilities.put(2,  "MANUAL_POST_PROCESSING");
+        capabilities.put(3,  "RAW");
+        capabilities.put(4,  "PRIVATE_REPROCESSING");
+        capabilities.put(5,  "READ_SENSOR_SETTINGS");
+        capabilities.put(6,  "BURST_CAPTURE");
+        capabilities.put(7,  "YUV_REPROCESSING");
+        capabilities.put(8,  "DEPTH_OUTPUT");
+        capabilities.put(9,  "CONSTRAINED_HIGH_SPEED_VIDEO");
+        capabilities.put(10, "MOTION_TRACKING");
+        capabilities.put(11, "LOGICAL_MULTI_CAMERA");
+        capabilities.put(12, "MONOCHROME");
+        capabilities.put(13, "SECURE_IMAGE_DATA");
+
+        formats.put(0,   "UNKNOWN");
+        formats.put(1,   "RGBA_8888");
+        formats.put(2,   "RGBX_8888");
+        formats.put(3,   "RGB_888");
+        formats.put(4,   "RGB_565");
+        formats.put(16,  "NV16");
+        formats.put(17,  "NV21");
+        formats.put(20,  "YUY2");
+        formats.put(32,  "RAW_SENSOR");
+        formats.put(34,  "PRIVATE");
+        formats.put(35,  "YUV_420_888");
+        formats.put(36,  "RAW_PRIVATE");
+        formats.put(37,  "RAW10");
+        formats.put(38,  "RAW12");
+        formats.put(39,  "YUV_422_888");
+        formats.put(40,  "YUV_444_888");
+        formats.put(41,  "FLEX_RGB_888");
+        formats.put(42,  "FLEX_RGBA_8888");
+        formats.put(54,  "YCBCR_P010");
+        formats.put(256, "JPEG");
+        formats.put(257, "DEPTH_POINT_CLOUD");
+        formats.put(4098, "RAW_DEPTH");
+        formats.put(540422489,  "Y16");
+        formats.put(538982489,  "Y8");
+        formats.put(842094169,  "YV12");
+        formats.put(1144402265, "DEPTH16");
+        formats.put(1212500294, "HEIC");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -383,7 +431,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
                 Log.e(TAG, "formats: " + getFormats(cameraCharacteristics));
                 cameraIdList.add(id);
             } catch (IllegalArgumentException ae) {
-                ae.printStackTrace();;
+                // ae.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -396,7 +444,8 @@ public class AndroidCamera2Api extends AppCompatActivity {
         if (streamConfigurationMap != null) {
             int[] outputFormats = streamConfigurationMap.getOutputFormats();
             for (int i = 0; i < outputFormats.length; i++) {
-                sb.append(outputFormats[i]);
+                // sb.append(outputFormats[i]);
+                sb.append(formats.get(outputFormats[i]));
                 if (i != outputFormats.length - 1) {
                     sb.append(",");
                 }
