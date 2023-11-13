@@ -383,7 +383,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
                 Log.e(TAG, "formats: " + getFormats(cameraCharacteristics));
                 cameraIdList.add(id);
             } catch (IllegalArgumentException ae) {
-
+                ae.printStackTrace();;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -391,13 +391,12 @@ public class AndroidCamera2Api extends AppCompatActivity {
     }
 
     private static String getFormats(CameraCharacteristics cameraCharacteristics) {
-        SparseArray<String> formats = new SparseArray<>();
         StringBuilder sb = new StringBuilder();
         StreamConfigurationMap streamConfigurationMap = (StreamConfigurationMap) cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
         if (streamConfigurationMap != null) {
             int[] outputFormats = streamConfigurationMap.getOutputFormats();
             for (int i = 0; i < outputFormats.length; i++) {
-                sb.append(formats.get(outputFormats[i]));
+                sb.append(outputFormats[i]);
                 if (i != outputFormats.length - 1) {
                     sb.append(",");
                 }
