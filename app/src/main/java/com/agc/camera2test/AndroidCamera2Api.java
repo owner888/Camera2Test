@@ -30,6 +30,7 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Size;
+import android.util.SizeF;
 import android.util.SparseIntArray;
 import android.view.OrientationEventListener;
 import android.view.Surface;
@@ -363,18 +364,34 @@ public class AndroidCamera2Api extends AppCompatActivity {
     private void openCamera() {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         Log.e(TAG, "is camera open");
-        try {
-            cameraIdList.clear();
-            cameraIdList.addAll(Arrays.asList(manager.getCameraIdList()));
-            initCamera(cameraIdList.get(0));
-            initSpinner();
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
+        cameraIdList.clear();
+        scanAllCameras(manager);
+        initCamear(cameraIdList.get(0));
+        initSpinner();
         Log.e(TAG, "openCamera X");
     }
 
-    private void initCamera(String cameraId){
+    private void scanAllCameras(CameraManager manager){
+        // 如果ids为空, 重新从 0-128 查找
+        if(!cameraIdList.isEmpty()){
+            return;
+        }
+        String[] ids = new String[128];
+        for (int i = 0; i < 128; i++) {
+            ids[i] = String.valueOf(i);
+        }
+        for (String id: ids) {
+            try {
+                cameraIdList.add(id);
+            } catch (IllegalArgumentException ae) {
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void initCamear(String cameraId){
         if(cameraId.equals(this.cameraId)){
             return;
         }
