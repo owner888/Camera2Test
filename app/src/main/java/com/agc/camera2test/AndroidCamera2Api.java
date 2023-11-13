@@ -26,10 +26,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
@@ -46,6 +42,11 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -55,8 +56,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-
 
 public class AndroidCamera2Api extends AppCompatActivity {
     private static final String TAG = "AndroidCameraApi";
@@ -142,13 +141,11 @@ public class AndroidCamera2Api extends AppCompatActivity {
     };
 
     final CameraCaptureSession.CaptureCallback captureCallbackListener = new CameraCaptureSession.CaptureCallback() {
-
         private void process(CaptureResult result) {
             Log.d("captureCallback", "***************** Entering PROCESS");
 
             switch (mState) {
                 case "PREVIEW": {
-
                     int afState = result.get(CaptureResult.CONTROL_AF_STATE);
                     if (CaptureResult.CONTROL_AF_TRIGGER_START == afState) {
                         if (areWeFocused) {
@@ -200,7 +197,6 @@ public class AndroidCamera2Api extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
 
     protected void takePicture() {
         if(null == cameraDevice) {
@@ -412,14 +408,12 @@ public class AndroidCamera2Api extends AppCompatActivity {
     }
 
     protected void updatePreview() {
-
         final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
             private void process(CaptureResult result) {
                 Log.d("captureCallback", "***************** ENTERING Capture Callback PROCESS()");
 
                 switch (mState) {
                     case "PREVIEW": {
-
                         int afState = result.get(CaptureResult.CONTROL_AF_STATE);
                         if (CaptureResult.CONTROL_AF_TRIGGER_START == afState) {
                             if (areWeFocused) {
@@ -454,6 +448,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
     private void closeCamera() {
         if (null != cameraDevice) {
             cameraDevice.close();
@@ -464,6 +459,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
             imageReader = null;
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
@@ -474,6 +470,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
             }
         }
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -485,6 +482,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
             textureView.setSurfaceTextureListener(textureListener);
         }
     }
+
     @Override
     protected void onPause() {
         Log.e(TAG, "onPause");
@@ -503,7 +501,7 @@ public class AndroidCamera2Api extends AppCompatActivity {
     public static boolean insertMediaPic(Context context, String filePath) {
         if (TextUtils.isEmpty(filePath)) return false;
         File file = new File(filePath);
-        //判断android Q  (10 ) 版本
+        // 判断android Q  (10 ) 版本
         if (Build.VERSION.SDK_INT >= 29) {
             if (file == null || !file.exists()) {
                 return false;
@@ -527,5 +525,4 @@ public class AndroidCamera2Api extends AppCompatActivity {
         }
 
     }
-
 }
